@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import { BASE_URL, API_KEY } from 'config';
 
 export interface MovieItem {
@@ -24,25 +24,25 @@ export interface Movie extends MovieItem {
   Production: string;
 }
 
-type MoviesProps = {
-  search?: string;
-  page: string;
-};
-
-type MoviesReturnSuccess = {
+export type MoviesReturnSuccess = {
   Search: MovieItem[];
   totalResults: string;
   Response: string;
 };
 
-type ReturnError = {
+export type ReturnError = {
   Response: string;
   Error: string;
 };
 
+export type MoviesParams = {
+  search?: string;
+  page: number;
+};
+
 export const fetchMoviesApi = async (
-  props: MoviesProps
-): Promise<MoviesReturnSuccess | ReturnError> => {
+  props: MoviesParams
+): Promise<AxiosResponse<MoviesReturnSuccess & ReturnError>> => {
   const { search = '', page = 1 } = props;
   const searchParams = new URLSearchParams();
   if (search) searchParams.set('s', search);
@@ -52,17 +52,12 @@ export const fetchMoviesApi = async (
   return await axios.get(`${BASE_URL}?${searchParams}`);
 };
 
-type MovieProps = {
-  imdbID: string;
-};
-
 export const fetchMovieApi = async (
-  props: MovieProps
-): Promise<Movie | ReturnError> => {
-  const { imdbID = '' } = props;
+  imdbID: number
+): Promise<AxiosResponse<Movie & ReturnError>> => {
   const searchParams = new URLSearchParams();
   searchParams.set('apikey', API_KEY);
-  searchParams.set('i', imdbID);
+  searchParams.set('i', imdbID.toString());
 
   return await axios.get(`${BASE_URL}?${searchParams}`);
 };

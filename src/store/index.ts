@@ -3,9 +3,14 @@ import {
   getDefaultMiddleware,
   combineReducers,
   EnhancedStore,
+  ThunkAction,
+  Action,
 } from '@reduxjs/toolkit';
+import { movieReducer } from './Movies';
 
-const rootReducer = combineReducers({});
+const rootReducer = combineReducers({
+  movieStore: movieReducer,
+});
 const middleware = getDefaultMiddleware();
 
 export const store = configureStore({
@@ -14,6 +19,7 @@ export const store = configureStore({
 });
 
 export type RootState = ReturnType<typeof rootReducer>;
+export type AppThunk = ThunkAction<void, RootState, unknown, Action<string>>;
 
 declare global {
   interface Window {
