@@ -23,6 +23,10 @@ const GlobalStyle = createGlobalStyle`
     font-size: 11pt;
   }
 
+  * {
+    box-sizing: border-box;
+  }
+
   code {
     font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
       monospace;

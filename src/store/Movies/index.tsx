@@ -16,8 +16,9 @@ export interface MoviesState {
   movies: MovieItem[];
   movie?: Movie;
   currentPage: number;
-  search?: string;
+  searchMovie?: string;
   hasNext: boolean;
+  totalLength: number;
 }
 
 const moviesInitialState: MoviesState = {
@@ -26,6 +27,7 @@ const moviesInitialState: MoviesState = {
   movies: [],
   currentPage: 1,
   hasNext: true,
+  totalLength: 0,
 };
 
 export const moviesSlice = createSlice({
@@ -44,8 +46,8 @@ export const moviesSlice = createSlice({
     setMovie: (state, { payload }: PayloadAction<Movie>) => {
       state.movie = payload;
     },
-    setSearch: (state, { payload }: PayloadAction<string>) => {
-      state.search = payload;
+    setSearchMovie: (state, { payload }: PayloadAction<string>) => {
+      state.searchMovie = payload;
     },
     setCurrentPage: (state, { payload }: PayloadAction<number>) => {
       state.currentPage = payload;
@@ -53,11 +55,16 @@ export const moviesSlice = createSlice({
     setHasNext: (state, { payload }: PayloadAction<boolean>) => {
       state.hasNext = payload;
     },
+    setTotalLength: (state, { payload }: PayloadAction<number>) => {
+      state.totalLength = payload;
+    },
     resetMovies: (state) => {
       state.movies = [];
-      state.search = undefined;
+      state.searchMovie = undefined;
       state.isFetchingMovies = false;
       state.hasNext = true;
+      state.totalLength = 0;
+      state.currentPage = 1;
     },
   },
 });
@@ -67,28 +74,49 @@ export const {
   setIsFetchingMovies,
   setMovie,
   setMovies,
+  resetMovies,
+  setCurrentPage,
+  setHasNext,
+  setSearchMovie,
+  setTotalLength,
 } = moviesSlice.actions;
 
 export const movieReducer = moviesSlice.reducer;
 
-export const fetchNextMovies = (): AppThunk => async (dispatch, getState) => {
+export const fetchMovies = (): AppThunk => async (dispatch, getState) => {
   try {
     dispatch(setIsFetchingMovies(true));
 
-    const { currentPage, search, movies } = getState().movieStore;
+    const { currentPage, searchMovie } = getState().movieStore;
     const params: MoviesParams = {
-      page: currentPage + 1,
+      page: currentPage,
     };
-    if (search) params.search = search;
+    if (searchMovie) params.search = searchMovie;
 
     const { data } = await fetchMoviesApi(params);
     if (data.Response === 'True') {
+      const { movies } = getState().movieStore;
       dispatch(setMovies([...movies, ...data.Search]));
     }
   } catch (err) {
     console.log('ERROR FETCHING MOVIES', err);
   } finally {
     dispatch(setIsFetchingMovies(false));
+  }
+};
+
+export const fetchNextMovies = (): AppThunk => async (dispatch, getState) => {
+  try {
+    const { currentPage } = getState().movieStore;
+    dispatch(setCurrentPage(currentPage + 1));
+    await dispatch(fetchMovies());
+    const afterLength = getState().movieStore.movies.length;
+    const totalLength = getState().movieStore.totalLength;
+    if (afterLength === totalLength) {
+      dispatch(setHasNext(false));
+    }
+  } catch (err) {
+    console.log('ERROR FETCHING MOVIES', err);
   }
 };
 
