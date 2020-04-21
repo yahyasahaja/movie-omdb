@@ -132,25 +132,31 @@ const MovieDetail = () => {
 
   const renderMovie = () => {
     if (isFetchingMovie)
-      return <div className="fetching-movie">Loading...</div>;
+      return (
+        <div data-testid="loading-wrapper" className="fetching-movie">
+          Loading...
+        </div>
+      );
     if (!movie) return <div className="movie-not-found">Movie Not Found</div>;
 
     return (
-      <div className="detail-wrapper">
+      <div data-testid="detail-wrapper" className="detail-wrapper">
         <div className="left">
           <div className="movie-image" onClick={showModalCallback}>
-            <img src={movie.Poster} alt="poster" />
+            <img data-testid="detail-poster" src={movie.Poster} alt="poster" />
           </div>
         </div>
 
         <div className="right">
-          <div className="movie-detail-title">
+          <div data-testid="detail-title" className="movie-detail-title">
             {movie.Title} ({movie.Year})
           </div>
-          <div className="plot">{movie.Plot}</div>
+          <div data-testid="detail-plot" className="plot">
+            {movie.Plot}
+          </div>
           <div className="additional-info">
             <span className="label">Rating: </span>
-            {movie.imdbRating}
+            <span data-testid="detail-rating">{movie.imdbRating}</span>
           </div>
           <div className="additional-info">
             <span className="label">Released: </span>

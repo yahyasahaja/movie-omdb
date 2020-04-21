@@ -118,13 +118,12 @@ const Movies = () => {
       dispatch(fetchNextMovies());
     }
 
-    // eslint-disable-next-line
-
     return () => {
       if (timeoutId !== -1) {
         clearTimeout(timeoutId);
       }
     };
+    // eslint-disable-next-line
   }, [location.search, dispatch]);
 
   return (
@@ -148,7 +147,7 @@ const Movies = () => {
           next={fetchNextMoviesCallback}
           hasMore={hasNext}
           loader={
-            <div className="loading-wrapper">
+            <div data-testid="loading-wrapper" className="loading-wrapper">
               <MovieCardSkeleton />
               <MovieCardSkeleton />
               <MovieCardSkeleton />

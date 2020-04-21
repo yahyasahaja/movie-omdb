@@ -75,7 +75,7 @@ const MovieCard = ({ data }: Props) => {
   }, [dispatch, data.Poster]);
 
   return (
-    <StyledMovieCard>
+    <StyledMovieCard data-testid="movie-card">
       <div className="image-wrapper" onClick={showModalCallback}>
         <img data-testid="card-poster" src={data.Poster} alt="poster" />
       </div>
