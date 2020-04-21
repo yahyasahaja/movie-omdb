@@ -1,6 +1,11 @@
 import React from 'react';
 import styled from 'styled-components';
 import { MovieItem } from 'api/omdbAPI';
+import { COLORS } from 'config';
+import { useHistory, useLocation } from 'react-router-dom';
+import { HistoryState } from 'types';
+import { showImagePresentation } from 'store/ImagePresentation';
+import { useDispatch } from 'react-redux';
 
 const StyledMovieCard = styled.div`
   display: block;
@@ -25,7 +30,7 @@ const StyledMovieCard = styled.div`
 
   .image-wrapper {
     width: 100%;
-    height: calc(100% - 30px);
+    height: calc(100% - 50px);
 
     img {
       width: 100%;
@@ -41,6 +46,18 @@ const StyledMovieCard = styled.div`
     padding: 0 10px;
     padding-top: 4px;
     overflow: hidden;
+    transition: 0.3s;
+    height: 100%;
+
+    &:hover {
+      background: ${COLORS.primary};
+    }
+
+    .view-details {
+      text-align: right;
+      font-size: 9pt;
+      margin-top: 3px;
+    }
   }
 `;
 
@@ -49,12 +66,35 @@ type Props = {
 };
 
 const MovieCard = ({ data }: Props) => {
+  const history = useHistory<HistoryState>();
+  const location = useLocation<HistoryState>();
+  const dispatch = useDispatch();
+  const showModalCallback = React.useCallback(() => {
+    dispatch(showImagePresentation(data.Poster));
+    // eslint-disable-next-line
+  }, [dispatch, data.Poster]);
+
   return (
     <StyledMovieCard>
-      <div className="image-wrapper">
+      <div className="image-wrapper" onClick={showModalCallback}>
         <img src={data.Poster} alt="poster" />
       </div>
-      <div className="title">{data.Title}</div>
+      <div
+        className="title"
+        onClick={() => {
+          history.push({
+            pathname: `/movies/${data.imdbID}`,
+            state: {
+              previousPath: location.pathname,
+              previousTitle: 'Ombd Movie List',
+              previousSearch: location.search,
+            },
+          });
+        }}
+      >
+        {data.Title}
+        <div className="view-details">View details</div>
+      </div>
     </StyledMovieCard>
   );
 };

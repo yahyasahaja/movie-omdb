@@ -121,10 +121,10 @@ export const fetchNextMovies = (): AppThunk => async (dispatch, getState) => {
 };
 
 //CACHE AND FETCH POLICY
-export const fetchMovie = (imdbID: number): AppThunk => async (dispatch) => {
+export const fetchMovie = (imdbID: string): AppThunk => async (dispatch) => {
   try {
     const movieFromLocal = getDataFromLocal<Movie>(LOCAL_MOVIE_URL);
-    if (movieFromLocal) {
+    if (movieFromLocal?.imdbID === imdbID) {
       dispatch(setMovie(movieFromLocal));
     } else {
       dispatch(setIsFetchingMovie(true));

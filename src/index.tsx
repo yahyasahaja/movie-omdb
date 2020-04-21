@@ -7,6 +7,7 @@ import { createGlobalStyle } from 'styled-components';
 
 import { BASE_URL, COLORS } from './config';
 import { store } from './store';
+import './fonts';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 

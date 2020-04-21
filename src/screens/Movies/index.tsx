@@ -13,13 +13,14 @@ import {
   fetchMovies,
 } from 'store/Movies';
 import SearchField from 'components/SearchField';
+import { useLocation, useHistory } from 'react-router-dom';
 
-const StyledHome = styled.div`
+const StyledMovies = styled.div`
   display: block;
   background: ${COLORS.backgroundColor};
   padding: 20px;
 
-  .home-title {
+  .movies-title {
     text-align: center;
     font-size: 18pt;
     font-weight: bold;
@@ -58,8 +59,10 @@ const StyledHome = styled.div`
   }
 `;
 
-const Home = () => {
-  const { movies, hasNext, totalLength } = useSelector(
+const Movies = () => {
+  const history = useHistory();
+  const location = useLocation();
+  const { movies, hasNext } = useSelector(
     (store: RootState) => store.movieStore
   );
   const dispatch = useDispatch();
@@ -72,28 +75,47 @@ const Home = () => {
   const [timeoutId, setTimeoutId] = React.useState(-1);
 
   React.useEffect(() => {
+    if (timeoutId !== -1) {
+      clearTimeout(timeoutId);
+      setTimeoutId(-1);
+    }
+
+    setTimeoutId(
+      setTimeout(() => {
+        const params = new URLSearchParams();
+        params.set('search', search);
+        const pushParams: any = {
+          pathname: location.pathname,
+        };
+        if (search) pushParams.search = params.toString();
+        if (timeoutId !== -1 || pushParams.search) {
+          history.push(pushParams);
+        }
+      }, 1000)
+    );
+
+    // eslint-disable-next-line
+  }, [search]);
+
+  //search params
+  React.useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const locationSearch = params.get('search');
+    setSearch(locationSearch || '');
     dispatch(resetMovies());
 
-    if (search) {
-      dispatch(setSearchMovie(search));
-
-      if (timeoutId !== -1) {
-        clearTimeout(timeoutId);
-        setTimeoutId(-1);
-      }
-
-      setTimeoutId(
-        setTimeout(() => {
-          dispatch(fetchMovies());
-          dispatch(fetchNextMovies());
-        }, 1000)
-      );
+    if (locationSearch) {
+      dispatch(setSearchMovie(locationSearch));
+      dispatch(fetchMovies());
+      dispatch(fetchNextMovies());
     }
-  }, [search, dispatch]);
+
+    // eslint-disable-next-line
+  }, [location.search, dispatch]);
 
   return (
-    <StyledHome>
-      <div className="home-title">Omdb Movie</div>
+    <StyledMovies>
+      <div className="movies-title">Omdb Movie</div>
 
       <div className="search-wrapper">
         <SearchField
@@ -105,7 +127,7 @@ const Home = () => {
         />
       </div>
 
-      {search && (
+      {(search || movies.length > 0) && (
         <InfiniteScroll
           className="card-wrapper"
           dataLength={movies.length}
@@ -134,8 +156,8 @@ const Home = () => {
           ))}
         </InfiniteScroll>
       )}
-    </StyledHome>
+    </StyledMovies>
   );
 };
 
-export default Home;
+export default Movies;

@@ -53,7 +53,7 @@ export const fetchMoviesApi = async (
 };
 
 export const fetchMovieApi = async (
-  imdbID: number
+  imdbID: string
 ): Promise<AxiosResponse<Movie & ReturnError>> => {
   const searchParams = new URLSearchParams();
   searchParams.set('apikey', API_KEY);
