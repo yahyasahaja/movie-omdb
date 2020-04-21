@@ -73,7 +73,6 @@ const ImagePresentation = () => {
           if (isShown && isClosed) {
             hideModalCallback();
           }
-          console.log('end?');
         }}
         src={imageUrl}
       />

@@ -86,7 +86,7 @@ const MovieCard = ({ data }: Props) => {
             pathname: `/movies/${data.imdbID}`,
             state: {
               previousPath: location.pathname,
-              previousTitle: 'Ombd Movie List',
+              previousTitle: 'Omdb Movie List',
               previousSearch: location.search,
             },
           });

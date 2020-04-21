@@ -77,25 +77,33 @@ const Movies = () => {
   React.useEffect(() => {
     if (timeoutId !== -1) {
       clearTimeout(timeoutId);
-      setTimeoutId(-1);
     }
 
-    setTimeoutId(
-      setTimeout(() => {
-        const params = new URLSearchParams();
-        params.set('search', search);
-        const pushParams: any = {
-          pathname: location.pathname,
-        };
-        if (search) pushParams.search = params.toString();
-        if (timeoutId !== -1 || pushParams.search) {
-          history.push(pushParams);
-        }
-      }, 1000)
-    );
+    const params = new URLSearchParams();
+    params.set('search', search);
+    const pushParams: any = {
+      pathname: location.pathname,
+    };
+    if (search) pushParams.search = params.toString();
 
+    if (timeoutId !== -1 || pushParams.search) {
+      setTimeoutId(
+        setTimeout(() => {
+          history.push(pushParams);
+        }, 1000)
+      );
+    }
     // eslint-disable-next-line
   }, [search]);
+
+  React.useEffect(
+    () => () => {
+      if (timeoutId !== -1) {
+        clearTimeout(timeoutId);
+      }
+    },
+    [timeoutId]
+  );
 
   //search params
   React.useEffect(() => {
@@ -111,6 +119,12 @@ const Movies = () => {
     }
 
     // eslint-disable-next-line
+
+    return () => {
+      if (timeoutId !== -1) {
+        clearTimeout(timeoutId);
+      }
+    };
   }, [location.search, dispatch]);
 
   return (
