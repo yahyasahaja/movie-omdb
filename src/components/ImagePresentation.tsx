@@ -62,9 +62,12 @@ const ImagePresentation = () => {
     }
   }, [isShown]);
 
-  if (!el || !isShown) return <div />;
+  if (!el || !isShown) return <div data-testid="image-presentation-hidden" />;
   return ReactDOM.createPortal(
-    <StyledImagePresentation onClick={() => setIsClosed(true)}>
+    <StyledImagePresentation
+      data-testid="image-presentation"
+      onClick={() => setIsClosed(true)}
+    >
       <motion.img
         initial="hidden"
         animate={!isClosed ? 'visible' : 'hidden'}
@@ -75,6 +78,7 @@ const ImagePresentation = () => {
           }
         }}
         src={imageUrl}
+        data-testid="image-presentation-img"
       />
     </StyledImagePresentation>,
     el
